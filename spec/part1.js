@@ -433,7 +433,7 @@
          *
          * Without knowing that mutation occured inside of _.reduce,
          * we would assume that `lastElement` is 5. But if inside of
-         * _.reduce, we use the array method `pop`, we would permanently
+         * _.reduce , we use the array method `pop`, we would permanently
          * change `input` and our assumption would not longer be true,
          * `lastElement` would be 4 instead!
          *

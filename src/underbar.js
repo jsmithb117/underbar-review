@@ -149,7 +149,7 @@
     for (var i = 0; i < array.length; i++) {
       //create 'element' variable that is the array[i] applied to iterator
       var element = iterator(array[i]);
-      //if storage does NOT contain 'element' (use !contains(element, store))
+      //if storage does NOT contain v'element' (use !contains(element, store))
       if (!contains(element)) {
         //push 'element' to storage
         storage.push(element);
