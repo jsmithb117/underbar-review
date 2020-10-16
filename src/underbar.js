@@ -88,24 +88,93 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    //create output array
+    var output = [];
+    //iterate over the array (for loop)
+    for (var i = 0; i < collection.length; i++) {
+      //for each element call the test  //if the element passes
+      if (test(collection[i])) {
+        //push element to output array
+        output.push(collection[i]);
+      }
+    }
+    //return output array
+    return output;
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+    //create output array
+    var output = [];
+    //iterate over the array (for loop)
+    for (var i = 0; i < collection.length; i++) {
+      //for each element call the test  //if the element does not pass
+      if (!test(collection[i])) {
+        //push element to output array
+        output.push(collection[i]);
+      }
+    }
+    //return output array
+    return output;
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    //if iterator is undefined
+    if (iterator === undefined) {
+      //define it as _.identity
+      iterator = _.identity;
+    }
+    //create storage array[true, false...]
+    var storage = [];
+    //create output array [1, 2]
+    var output = [];
+
+    //write 'contains' function
+    var contains = function(element) {
+      //iterate storage
+      for (var i = 0; i < storage.length; i++) {
+        //if element matches any item
+        if (element === storage[i]) {
+          //return true
+          return true;
+        }
+      }
+      //return false
+      return false;
+    };
+    //iterate array
+    for (var i = 0; i < array.length; i++) {
+      //create 'element' variable that is the array[i] applied to iterator
+      var element = iterator(array[i]);
+      //if storage does NOT contain 'element' (use !contains(element, store))
+      if (!contains(element)) {
+        //push 'element' to storage
+        storage.push(element);
+        //push array[i] to output
+        output.push(array[i]);
+      }
+    }
+    //return output array
+    return output;
   };
 
-
-  // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+
+    //create result array
+    var result = [];
+    //iterate over the collection
+    for (var i = 0; i < collection.length; i++) {
+      //apply the iterator to each element in the collection and push to result array
+      result.push(iterator(collection[i]));
+    }
+    //return result array
+    return result;
   };
 
   /*
@@ -147,6 +216,24 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    //array case
+    //
+    if (accumulator === undefined) {
+      //assign accumulator as collection[0]
+      accumulator = collection[0];
+      //iterate starting at i = 1
+      for (let i = 1; i < collection.length; i++) {
+        //apply iterator to that element and add it to accumulator
+        accumulator = iterator(accumulator, collection[i]);
+      }
+    } else { //else
+      //iterate starting at i = 0
+      for (let i = 0; i < collection.length; i++) {
+        //apply iterator to each element and add it to accumulator
+        accumulator = iterator(accumulator, collection[i]);
+      }
+    }
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -163,94 +250,10 @@
 
 
   // Determine whether all of the elements match a truth test.
-  _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
-  };
+  // _*
+  //  * In this section, we'll look at a couple of helpers for merging objects.
+  // }*/
 
-  // Determine whether any of the elements pass a truth test. If no iterator is
-  // provided, provide a default one
-  _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
-  };
-
-
-  /**
-   * OBJECTS
-   * =======
-   *
-   * In this section, we'll look at a couple of helpers for merging objects.
-   */
-
-  // Extend a given object with all the properties of the passed in
-  // object(s).
-  //
-  // Example:
-  //   var obj1 = {key1: "something"};
-  //   _.extend(obj1, {
-  //     key2: "something new",
-  //     key3: "something else new"
-  //   }, {
-  //     bla: "even more stuff"
-  //   }); // obj1 now contains key1, key2, key3 and bla
-  _.extend = function(obj) {
-  };
-
-  // Like extend, but doesn't ever overwrite a key that already
-  // exists in obj
-  _.defaults = function(obj) {
-  };
-
-
-  /**
-   * FUNCTIONS
-   * =========
-   *
-   * Now we're getting into function decorators, which take in any function
-   * and return out a new version of the function that works somewhat differently
-   */
-
-  // Return a function that can be called at most one time. Subsequent calls
-  // should return the previously returned value.
-  _.once = function(func) {
-    // TIP: These variables are stored in a "closure scope" (worth researching),
-    // so that they'll remain available to the newly-generated function every
-    // time it's called.
-    var alreadyCalled = false;
-    var result;
-
-    // TIP: We'll return a new function that delegates to the old one, but only
-    // if it hasn't been called before.
-    return function() {
-      if (!alreadyCalled) {
-        // TIP: .apply(this, arguments) is the standard way to pass on all of the
-        // infromation from one function call to another.
-        result = func.apply(this, arguments);
-        alreadyCalled = true;
-      }
-      // The new function always returns the originally computed result.
-      return result;
-    };
-  };
-
-  // Memorize an expensive function's results by storing them. You may assume
-  // that the function only takes primitives as arguments.
-  // memoize could be renamed to oncePerUniqueArgumentList; memoize does the
-  // same thing as once, but based on many sets of unique arguments.
-  //
-  // _.memoize should return a function that, when called, will check if it has
-  // already computed the result for the given argument and return that value
-  // instead if possible.
-  _.memoize = function(func) {
-  };
-
-  // Delays a function for the given number of milliseconds, and then calls
-  // it with the arguments supplied.
-  //
-  // The arguments for the original function are passed after the wait
-  // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
-  // call someFunction('a', 'b') after 500ms
-  _.delay = function(func, wait) {
-  };
 
 
   /**
@@ -320,6 +323,3 @@
   _.throttle = function(func, wait) {
   };
 }());
-
-
-iterations:  [["a",["a","b","c"]],["b",["a","b","c"]],["c",["a","b","c"]]]
