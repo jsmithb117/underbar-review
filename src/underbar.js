@@ -217,24 +217,29 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
     //array case
-    //
+    if (Array.isArray(collection)) {
+      var objVals = collection;
+    } else {
+      var objVals = Object.values(collection);
+    }
     if (accumulator === undefined) {
       //assign accumulator as collection[0]
-      accumulator = collection[0];
+      accumulator = objVals[0];
       //iterate starting at i = 1
-      for (let i = 1; i < collection.length; i++) {
+      for (let i = 1; i < objVals.length; i++) {
         //apply iterator to that element and add it to accumulator
-        accumulator = iterator(accumulator, collection[i]);
+        accumulator = iterator(accumulator, objVals[i]);
       }
     } else { //else
       //iterate starting at i = 0
-      for (let i = 0; i < collection.length; i++) {
+      for (let i = 0; i < objVals.length; i++) {
         //apply iterator to each element and add it to accumulator
-        accumulator = iterator(accumulator, collection[i]);
+        accumulator = iterator(accumulator, objVals[i]);
       }
-    }
+    } //object case
     return accumulator;
   };
+
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
@@ -250,12 +255,48 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    if (iterator === undefined) {
+      iterator = _.identity;
+    }
+    return _.reduce(collection, function(acc, item) {
+      if (acc === false) {
+        return false;
+      }
+      if (!iterator(item)) {
+        acc = false;
+      } else {
+        acc = true;
+      }
+      return acc;
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    //initialize return var
+    var output = false;
+
+    if (iterator === undefined) {
+      iterator = _.identity;
+    }
+    //take care of array vs object case
+    if (Array.isArray(collection)) {
+      var objVals = collection;
+    } else {
+      var objVals = Object.values(collection);
+    }
+    //iterate over the collection
+    for (var i = 0; i < objVals.length; i++) {
+      //call the iterator on every element //if the element passes the iterator
+      if (iterator(objVals[i])) {
+        //change output to true
+        output = true;
+      }
+    }
+    //return output
+    return output;
   };
 
 
@@ -278,11 +319,34 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    //iterate over arguments
+    for (var i = 0; i < arguments.length; i++) {
+      //iterate over each element of each argument
+      for (var j in arguments[i]) {
+        //assign the key and val to obj
+        obj[j] = arguments[i][j];
+      }
+    }
+    //return the obj
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    //iterate over arguments
+    for (var i = 0; i < arguments.length; i++) {
+      //iterate over each element of each argument
+      for (var j in arguments[i]) {
+        //if the object at j is undefined
+        if (obj[j] === undefined) {
+          //assign the key and val to obj
+          obj[j] = arguments[i][j];
+        }
+      }
+    }
+    //return the obj
+    return obj;
   };
 
 
@@ -326,6 +390,21 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    //create a storage object {'1, 2': 3, '3, 4': 7}
+    var storage = {};
+    //create the function that we will return
+    var outputFunction = function() {
+      //create variable that is the stringified arguments
+      var args = JSON.stringify(arguments);
+      //if func with those arguments is not in the storage object
+      if (!storage[args]) {
+        //store it
+        storage[args] = func.apply(this, arguments);
+      }
+      //return
+      return storage[args];
+    };
+    return outputFunction;
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -335,6 +414,13 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    //create array with extra arguments
+    var slicer = Array.prototype.slice;
+    var args = slicer.call(arguments, 2);
+    //return setTimeout passing in func with args and wait
+    return setTimeout (function() {
+      func.apply(this, args);
+    }, wait);
   };
 
 
@@ -356,8 +442,23 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    //create output array
+    var output = [];
+    //iterate array
+    for (let i = 0; i < array.length; i++) {
+      //create random index
+      var index = Math.floor(Math.random() * array.length);
+      //while the value of output[index] is not undefined
+      while (output[index] !== undefined) {
+        //create random number
+        index = Math.floor(Math.random() * array.length);
+      }
+      //assign element to output array at random
+      output[index] = array[i];
+    }
+    //return output array
+    return output;
   };
-
 
   /**
    * ADVANCED
