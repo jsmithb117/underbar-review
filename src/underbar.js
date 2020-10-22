@@ -471,6 +471,9 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    // for (let i = 0; i < collection.length; i++) {
+    //   functionOrKey.apply(collection[i], collection[i])
+    // }
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -485,7 +488,25 @@
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
-  _.zip = function() {
+  _.zip = function(array1) {
+    //create output array
+    var output = [];
+    //iterate array1
+    for (let i = 0; i < array1.length; i++) {
+      //create intermediate array, set to array1[i]
+      var intermediate = [array1[i]];
+      //iterate arguments(j)
+      for (let j = 1; j < arguments.length; j++) {
+        //if arguments[j] is not undefined
+        if (arguments[j] !== undefined) {
+          //push arguments[j][i] to output array
+          intermediate.push(arguments[j][i]);
+        }
+      }
+      //push intermediate to output
+      output.push(intermediate)
+    }
+    return output;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -493,16 +514,69 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    //create output array
+    var output = [];
+    //iterate nestedArray
+    for (let i = 0; i < nestedArray.length; i++) {
+      //if element is an array, concat recursed element to output
+      if (Array.isArray(nestedArray[i])) {
+        // var newVal = _.flatten(nestedArray[i])
+        output = output.concat(_.flatten(nestedArray[i]))
+      } else {//else push element to output
+        output.push(nestedArray[i]);
+      }
+    }
+    return output;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
-  _.intersection = function() {
+  _.intersection = function(array1) {
+    //create output array
+    var output = [];
+    //iterate array1(i)
+    for (let i = 0; i < array1.length; i++) {
+      //iterate arguments(j), start at 1
+      for (let j = 1; j < arguments.length; j++) {
+        //iterate arguments[j](k)
+        for (let k = 0; k < arguments[j].length; k++) {
+          //if array1[i] is equal to arguments[j][k], push array1[i]to output
+          if (array1[i] === arguments[j][k]) {
+            output.push(array1[i]);
+          }
+        }
+      }
+    }
+      //return output
+    return output;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    //create output array
+    var output = [];
+    //iterate array(i)
+    for (let i = 0; i < array.length; i++) {
+      var elem = array[i];
+      //create isDifferent
+      var isDifferent = [];
+      //iterate arguments(j), start at 1
+      for (let j = 1; j < arguments.length; j++) {
+        //iterate arguments[j](k)
+        for (let k = 0; k < arguments[j].length; k++) {
+          //push arguments[j][k] to isDifferent array
+          isDifferent.push(arguments[j][k])
+          }
+        }
+      //if isDifferent does not contain array[i]
+      var contains = _.contains(isDifferent, array[i])
+      if (!contains) {
+        //push array[i] to output
+        output.push(array[i])
+      }
+    }
+    return output;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
